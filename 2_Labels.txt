@@ -1,0 +1,5 @@
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options.Connect(connectionString)
+    .Select(KeyFilter.Any, "Testing");
+});

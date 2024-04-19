@@ -1,0 +1,16 @@
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options.Connect(connectionString)
+    .ConfigureRefresh(refresh =>
+    {
+        refresh.Register("Sentinel", refreshAll: true)
+            .SetCacheExpiration(TimeSpan.FromSeconds(5));
+    })
+    .ConfigureKeyVault(keyVaultOptions =>
+    {
+        keyVaultOptions.SetCredential(new DefaultAzureCredential());
+    })
+    .UseFeatureFlags(featureFlagOptions => {
+        featureFlagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(5);
+    });
+});

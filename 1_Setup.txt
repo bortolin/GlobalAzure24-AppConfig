@@ -1,0 +1,8 @@
+string connectionString = builder.Configuration.GetConnectionString("AppConfig");
+
+builder.Configuration.AddAzureAppConfiguration(options =>
+{
+    options.Connect(connectionString);
+});
+
+builder.Services.AddAzureAppConfiguration();

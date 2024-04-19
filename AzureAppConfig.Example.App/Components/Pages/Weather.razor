@@ -1,0 +1,98 @@
+﻿@page "/weather"
+@using Microsoft.FeatureManagement
+@using Microsoft.Extensions.Options
+@rendermode @(new  InteractiveServerRenderMode(false))
+@inject IFeatureManager featuresManager
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead style=" background-color:@HeaderColor">
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                @if (EnableFTemp)
+                {
+                    <th>Temp. (F)</th>
+                }
+                <th>Summary</th>
+                @if (EnableUmidity)
+                {
+                    <th>Umidity</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    @if (EnableFTemp)
+                    {
+                        <td>@forecast.TemperatureF</td>
+                    }
+                    <td>@forecast.Summary</td>
+                    @if (EnableUmidity)
+                    {
+                        <td>@forecast.Umidity.ToString("P")</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private bool EnableFTemp;
+    private bool EnableUmidity;
+    private string HeaderColor = "yellow";
+
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        EnableFTemp = await featuresManager.IsEnabledAsync("EnableFTemp");
+
+        if (await featuresManager.IsEnabledAsync("HeaderColorGray")) HeaderColor = "LightGray";
+
+        EnableUmidity = await featuresManager.IsEnabledAsync("EnableUmidity");
+
+        await LoadSampleData();
+    }
+
+    private async Task LoadSampleData()
+    {
+  
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = startDate.AddDays(index),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = summaries[Random.Shared.Next(summaries.Length)],
+                Umidity = Random.Shared.Next(0, 100)
+            }).ToArray();
+    }
+
+    private class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string? Summary { get; set; }
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        public int Umidity  { get; set;}
+    }
+}

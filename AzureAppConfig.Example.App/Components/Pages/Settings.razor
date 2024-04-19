@@ -1,0 +1,15 @@
+﻿@page "/settings"
+@using AzureAppConfig.Example.App.Options
+@using Microsoft.Extensions.Options
+@inject IOptionsSnapshot<SmtpServerOptions> smtpServerOptions
+@rendermode InteractiveServer
+
+<PageTitle>Settings</PageTitle>
+
+<h1>Mail Server Configuration</h1>
+<ul>
+    <li>Hostname: @smtpServerOptions.Value.Hostname</li>
+    <li>Username: @smtpServerOptions.Value.Username</li>
+    <li>Password: @smtpServerOptions.Value.Password</li>
+    <li>Port: @smtpServerOptions.Value.Port</li>
+</ul>
